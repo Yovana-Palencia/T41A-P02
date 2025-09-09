@@ -74,12 +74,23 @@ def test_structure(db_connection):
             WHERE tablename 
             IN ('alumnos', 'maestros', 'grupos',
             'inscripciones', 'asistencia');
-            IN ('estudiante', 'profesor', 'curso',
-            'inscripcion', 'asistencia');
           '''
     expected_tables = {'alumnos', 'maestros',
                        'grupos', 'inscripciones',
                        'asistencia'}
+    with db_connection.cursor() as cur:
+        cur.execute(sql)
+        result_tables = {row[0] for row in cur.fetchall()}
+        msg = f'''Expected tables {expected_tables},
+              but found {result_tables}'''
+        assert result_tables == expected_tables, msg
+
+def test_structure(db_connection):
+    sql = ''' 
+            SELECT tablename FROM pg_tables 
+            WHERE tablename IN ('estudiante', 'profesor', 'curso',
+                                'inscripcion', 'asistencia');
+          '''
     expected_tables = {'estudiante', 'profesor',
                        'curso', 'inscripcion',
                        'asistencia'}
@@ -89,5 +100,6 @@ def test_structure(db_connection):
         msg = f'''Expected tables {expected_tables},
               but found {result_tables}'''
         assert result_tables == expected_tables, msg
+
                 
         
